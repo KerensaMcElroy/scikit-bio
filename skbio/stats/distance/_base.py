@@ -734,7 +734,7 @@ class DistanceMatrix(DissimilarityMatrix):
     @classonlymethod
     @experimental(as_of="0.4.1")
     def from_iterable(cls, iterable, metric, key=None, keys=None,
-                      validate=True):
+                      validate=True, **kwds):
         """Create DistanceMatrix from all pairs in an iterable given a metric.
 
         Parameters
@@ -761,6 +761,8 @@ class DistanceMatrix(DissimilarityMatrix):
             (excluding the diagonal) is computed. Pass ``validate=False`` if
             you are sure `metric` is hollow and symmetric for improved
             performance.
+        **kwds : optional keyword parameters
+            Any further parameters are passed directly to the metric function. 
 
         Returns
         -------
@@ -775,7 +777,7 @@ class DistanceMatrix(DissimilarityMatrix):
         """
         if validate:
             return super(DistanceMatrix, cls).from_iterable(iterable, metric,
-                                                            key, keys)
+                                                            key, keys, **kwds)
 
         iterable = list(iterable)
         if key is not None and keys is not None:
@@ -791,7 +793,7 @@ class DistanceMatrix(DissimilarityMatrix):
         dm = np.zeros((len(iterable),) * 2)
         for i, a in enumerate(iterable):
             for j, b in enumerate(iterable[:i]):
-                dm[i, j] = dm[j, i] = metric(a, b)
+                dm[i, j] = dm[j, i] = metric(a, b, **kwds)
 
         return cls(dm, keys_)
 
